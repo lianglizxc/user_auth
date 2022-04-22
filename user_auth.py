@@ -15,7 +15,7 @@ class Expire_data():
 
     def __getitem__(self, key):
         if key not in self.auth:
-            raise KeyError(f'token {key} is invalid')
+            return None
 
         value, val_time = self.auth[key]
         if (datetime.now() - val_time) > timedelta(seconds=self.ttl):
@@ -31,8 +31,6 @@ class Expire_data():
         del self.auth[key]
 
     def __contains__(self, item):
-        if item not in self.auth:
-            return False
         if self[item]:
             return True
         else:
@@ -91,6 +89,8 @@ class User_roles():
             raise KeyError(f"password is wrong")
 
         token = uuid.uuid4().hex
+        while token in self.auths_data:
+            token = uuid.uuid4().hex
         self.auths_data[token] = user_name
         return token
 
